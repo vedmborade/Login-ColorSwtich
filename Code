@@ -1,0 +1,138 @@
+import SwiftUI
+struct ContentView: View {
+    @State private var bgColor = Color.white
+    @State private var selection = 0
+    @State private var isLoggedIn = false
+    
+    var body: some View {
+        if isLoggedIn {
+            TabView(selection: $selection) {
+                TitleView(bgColor: $bgColor)
+                    .tabItem {
+                        Image(systemName: "house")
+                        Text("Home")
+                    }
+                    .tag(0)
+                
+                SoundsView()
+                    .tabItem {
+                        Image(systemName: "music.note")
+                        Text("Sounds")
+                    }
+                    .tag(1)
+            }
+        } else {
+            LoginView(isLoggedIn: $isLoggedIn)
+        }
+    }
+}
+
+struct TitleView: View {
+    @Binding var bgColor: Color
+    @Environment(\.presentationMode) var presentationMode
+    
+    var body: some View {
+        ZStack {
+            bgColor.edgesIgnoringSafeArea(.all)
+            VStack {
+                Image(systemName: "globe")
+                    .font(.system(size: 80))
+                    .foregroundColor(.accentColor)
+                Text("My Awesome App")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundColor(.accentColor)
+                    .padding(.top, 20)
+                
+                Button(action: {
+                    self.bgColor = Color.random
+                }) {
+                    Text("Change Background Color")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.accentColor)
+                        .cornerRadius(10)
+                }
+                .padding(.top, 40)
+            }
+        }
+        .navigationTitle("Home")
+        .toolbar {
+            ToolbarItemGroup {
+                Button(action: {
+                    // Add your logout logic here
+                    self.presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("Logout")
+                }
+                Spacer()
+            }
+        }
+    }
+}
+
+struct SoundsView: View {
+    let sounds = ["Piano", "Drums", "Guitar", "Bass"]
+    
+    var body: some View {
+        List(sounds, id: \.self) { sound in
+            Text(sound)
+        }
+        .navigationTitle("Sounds")
+    }
+}
+
+struct LoginView: View {
+    @State private var username = ""
+    @State private var password = ""
+    @Binding var isLoggedIn: Bool
+    
+    var body: some View {
+        VStack {
+            Image(systemName: "lock")
+                .font(.system(size: 80))
+                .foregroundColor(.accentColor)
+                .padding(.bottom, 20)
+            
+            TextField("Username", text: $username)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+            
+            SecureField("Password", text: $password)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+            
+            Button(action: {
+                // Authenticate user here
+                if username == "user" && password == "password" {
+                    isLoggedIn = true
+                }
+            }) {
+                Text("Login")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.accentColor)
+                    .cornerRadius(10)
+            }
+            .padding(.top, 20)
+        }
+        .padding()
+    }
+}
+
+extension Color {
+    static var random: Color {
+        return Color(
+            red: .random(in: 0...1),
+            green: .random(in: 0...1),
+            blue: .random(in: 0...1)
+        )
+    }
+}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
